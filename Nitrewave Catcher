@@ -36,7 +36,7 @@ $commands = @(
 )
 
 # Create a file to save the output
-$outputFile = Join-Path (Get-Location) 'hardware_info.txt'
+$outputFile = Join-Path (Get-Location) 'Serialnumbers.txt'
 
 # Open the file for writing
 "Outputting hardware info to $outputFile" | Out-File -FilePath $outputFile
