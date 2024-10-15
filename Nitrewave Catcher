@@ -1,61 +1,59 @@
-// Author: Bebben
-// Description: Checks if Nitrewave is alting guys!
+Clear-Host
 
-using System;
-using System.Diagnostics;
-using System.IO;
+Write-Host @"
+  ██████╗ ███████╗██████╗     ██╗      ██████╗ ████████╗██╗   ██╗███████╗         
+  ██╔══██╗██╔════╝██╔══██╗    ██║     ██╔═══██╗╚══██╔══╝██║   ██║██╔════╝         
+  ██████╔╝█████╗  ██║  ██║    ██║     ██║   ██║   ██║   ██║   ██║███████╗         
+  ██╔══██╗██╔══╝  ██║  ██║    ██║     ██║   ██║   ██║   ██║   ██║╚════██║         
+  ██║  ██║███████╗██████╔╝    ███████╗╚██████╔╝   ██║   ╚██████╔╝███████║         
+  ╚═╝  ╚═╝╚══════╝╚═════╝     ╚══════╝ ╚═════╝    ╚═╝    ╚═════╝ ╚══════╝         
+                                                                                  
+"@ -ForegroundColor Red
+Write-Host ""
+Write-Host "  Made by Bxbben - " -ForegroundColor Blue -NoNewline
+Write-Host -ForegroundColor Red "discord.gg/redlotus"
 
-class Program
-{
-    static void Main(string[] args)
-    {
-        // Define the PowerShell commands to be executed
-        string[] commands = {
-            "Get-WmiObject win32_processor | Select-Object ProcessorId",
-            "Get-WmiObject Win32_PhysicalMemory | Select-Object SerialNumber",
-            "Get-WmiObject Win32_DiskDrive | Select-Object SerialNumber"
-        };
-
-        // Get the current directory and set the output file path
-        string outputPath = Path.Combine(Directory.GetCurrentDirectory(), "hardware_info.txt");
-
-        // Create or overwrite the text file
-        using (StreamWriter writer = new StreamWriter(outputPath))
-        {
-            foreach (var command in commands)
-            {
-                writer.WriteLine($"Running command: {command}");
-                
-                // Run the PowerShell command and capture the output
-                string result = RunPowerShellCommand(command);
-                
-                // Write the output to the file
-                writer.WriteLine(result);
-                writer.WriteLine(new string('=', 50));  // Separate the results for readability
-            }
-        }
-
-        Console.WriteLine($"Output written to {outputPath}");
-    }
-
-    // Method to run PowerShell commands and return the output
-    static string RunPowerShellCommand(string command)
-    {
-        ProcessStartInfo psi = new ProcessStartInfo
-        {
-            FileName = "powershell.exe",
-            Arguments = $"-Command \"{command}\"",
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-
-        using (Process process = Process.Start(psi))
-        {
-            using (StreamReader reader = process.StandardOutput)
-            {
-                return reader.ReadToEnd();
-            }
-        }
-    }
+Write-Host ""
+function Test-Admin {;$currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent());$currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator);}
+if (!(Test-Admin)) {
+    Write-Warning "Please Run This Script as Admin."
+    Start-Sleep 10
+    Exit
 }
+
+Start-Sleep -s 3
+
+Clear-Host
+
+$host.privatedata.ProgressForegroundColor = "red";
+$host.privatedata.ProgressBackgroundColor = "black";# Author: Bebben
+
+# Powershell Command to be executed
+$commands = @(
+    'Get-WmiObject win32_processor | Select-Object ProcessorId',
+    'Get-WmiObject Win32_PhysicalMemory | Select-Object SerialNumber',
+    'Get-WmiObject Win32_DiskDrive | Select-Object SerialNumber'
+)
+
+# Create a file to save the output
+$outputFile = Join-Path (Get-Location) 'hardware_info.txt'
+
+# Open the file for writing
+"Outputting hardware info to $outputFile" | Out-File -FilePath $outputFile
+
+# Loop through each command and execute it
+foreach ($command in $commands) {
+    # Write the command being run
+    "Running command: $command" | Out-File -FilePath $outputFile -Append
+
+    # Run the command and capture the output
+    $result = Invoke-Expression $command
+
+    # Write the command output to the file
+    $result | Out-File -FilePath $outputFile -Append
+    ("=" * 50) | Out-File -FilePath $outputFile -Append  # Separate results for readability
+}
+
+# Output file creation confirmation
+Write-Host "Output written to $outputFile"
+
