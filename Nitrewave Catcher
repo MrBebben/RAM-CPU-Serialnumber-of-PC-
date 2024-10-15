@@ -28,7 +28,6 @@ Clear-Host
 $host.privatedata.ProgressForegroundColor = "red";
 $host.privatedata.ProgressBackgroundColor = "black";# Author: Bebben
 
-# Powershell Command to be executed
 $commands = @(
     'Get-WmiObject win32_processor | Select-Object ProcessorId',
     'Get-WmiObject Win32_PhysicalMemory | Select-Object SerialNumber',
