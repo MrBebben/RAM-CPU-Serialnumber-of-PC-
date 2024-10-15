@@ -34,25 +34,19 @@ $commands = @(
     'Get-WmiObject Win32_DiskDrive | Select-Object SerialNumber'
 )
 
-# Create a file to save the output
 $outputFile = Join-Path (Get-Location) 'Serialnumbers.txt'
 
-# Open the file for writing
 "Outputting hardware info to $outputFile" | Out-File -FilePath $outputFile
 
-# Loop through each command and execute it
 foreach ($command in $commands) {
     # Write the command being run
     "Running command: $command" | Out-File -FilePath $outputFile -Append
 
-    # Run the command and capture the output
     $result = Invoke-Expression $command
 
-    # Write the command output to the file
     $result | Out-File -FilePath $outputFile -Append
     ("=" * 50) | Out-File -FilePath $outputFile -Append  # Separate results for readability
 }
 
-# Output file creation confirmation
 Write-Host "Output written to $outputFile"
 
